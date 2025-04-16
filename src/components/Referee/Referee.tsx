@@ -6,6 +6,7 @@ import { Pawn } from "../../models/Pawn";
 import { PieceType, TeamType } from "../../Types";
 import Chessboard from "../Chessboard/Chessboard";
 import "./Referee.css";
+import React from 'react';
 
 export default function Referee() {
     const [board, setBoard] = useState<Board>(initialBoard.clone());

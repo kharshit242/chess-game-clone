@@ -1,5 +1,5 @@
 import "./Tile.css";
-
+import React from 'react';
 interface Props {
   image?: string;
   number: number;
