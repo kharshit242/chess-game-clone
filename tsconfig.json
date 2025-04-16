@@ -1,11 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "jsx": "react",
+    "strict": true
+  },
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
