@@ -1,6 +1,7 @@
 import { abi as contractABI } from './contracts/ChessGameABI.js';
 import { io } from "socket.io-client";
 import { Chess } from 'chess.js';
+import { createWalletClient, custom } from 'viem';
 
 
 window.contractABI = contractABI;
@@ -8,7 +9,8 @@ window.contractABI = contractABI;
 
 
 
-const socket = io();
+const socket = io("http://localhost:3000");
+
 const chess = new Chess();
 
 const boardElement = document.querySelector(".chessboard");
@@ -201,20 +203,22 @@ recordMoveOnMonad(gameId, moveNotation);
 
 
 async function recordMoveOnMonad(gameId, moveNotation) {
-  const CONTRACT_ADDRESS = '0xYOUR_CONTRACT_ADDRESS' // 🧠 Paste your deployed contract address here
-
-  const { createWalletClient, custom } = window.viem
-  const { http } = window.viem.transports
+  const CONTRACT_ADDRESS = '0x7402240A741bbF3b0fD8740965ba35Dd49b81610';
+ // 🧠 Replace this
 
   const client = createWalletClient({
     chain: {
       id: 9090,
       name: 'Monad Testnet',
       nativeCurrency: { name: 'Monad', symbol: 'MON', decimals: 18 },
-      rpcUrls: { default: { http: ['https://testnet-rpc.monad.xyz'] } },
+      rpcUrls: {
+        default: {
+          http: ['https://testnet-rpc.monad.xyz'],
+        },
+      },
     },
     transport: custom(window.ethereum),
-  })
+  });
 
   try {
     const txHash = await client.writeContract({
@@ -222,12 +226,13 @@ async function recordMoveOnMonad(gameId, moveNotation) {
       abi: contractABI,
       functionName: 'recordMove',
       args: [gameId, moveNotation],
-    })
-    console.log('✅ Move recorded on Monad! TxHash:', txHash)
+    });
+    console.log('✅ Move recorded on Monad! TxHash:', txHash);
   } catch (err) {
-    console.error('❌ Failed to record move:', err)
+    console.error('❌ Failed to record move:', err);
   }
 }
+
 
 
 socket.on("userCount", (count) => {

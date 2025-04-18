@@ -6,8 +6,23 @@ const path = require("path");
 const PORT = process.env.PORT || 3000;
 
 const app = express();
+const cors = require("cors");
+
+// Allow CORS from Vite frontend
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
+
 const server = http.createServer(app);
-const io = socket(server);
+const io = socket(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+
 
 const rooms = {};
 
