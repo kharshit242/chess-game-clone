@@ -1,3 +1,7 @@
+import { abi as contractABI } from '/javascripts/contracts/ChessGameABI.js'; window.contractABI = contractABI;
+window.contractABI = abi;
+
+
 const socket = io();
 const chess = new Chess();
 
@@ -181,8 +185,44 @@ socket.on("boardState", (fen) => {
 
 socket.on("move", (move) => {
   chess.move(move);
+  const moveNotation = `${move.from} to ${move.to}`;
+const gameId = 0; // Use real game ID if available
+recordMoveOnMonad(gameId, moveNotation);
+
   renderBoard();
 });
+
+import { abi } from './contracts/ChessGameABI.js'
+
+async function recordMoveOnMonad(gameId, moveNotation) {
+  const CONTRACT_ADDRESS = '0xYOUR_CONTRACT_ADDRESS' // 🧠 Paste your deployed contract address here
+
+  const { createWalletClient, custom } = window.viem
+  const { http } = window.viem.transports
+
+  const client = createWalletClient({
+    chain: {
+      id: 9090,
+      name: 'Monad Testnet',
+      nativeCurrency: { name: 'Monad', symbol: 'MON', decimals: 18 },
+      rpcUrls: { default: { http: ['https://testnet-rpc.monad.xyz'] } },
+    },
+    transport: custom(window.ethereum),
+  })
+
+  try {
+    const txHash = await client.writeContract({
+      address: CONTRACT_ADDRESS,
+      abi: abi,
+      functionName: 'recordMove',
+      args: [gameId, moveNotation],
+    })
+    console.log('✅ Move recorded on Monad! TxHash:', txHash)
+  } catch (err) {
+    console.error('❌ Failed to record move:', err)
+  }
+}
+
 
 socket.on("userCount", (count) => {
   userCountElement.textContent = `Online users: ${count}`;
@@ -243,3 +283,17 @@ const showPossibleMoves = (row, col) => {
 };
 
 renderBoard();
+
+document.getElementById("connect").addEventListener("click", async () => {
+  if (window.ethereum) {
+    try {
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      console.log("👜 Base Wallet connected!");
+    } catch (err) {
+      console.error("❌ Wallet connection failed:", err);
+    }
+  } else {
+    alert("Please install Base Wallet or MetaMask to connect.");
+  }
+});
+

@@ -263,6 +263,16 @@
             Join Room
           </button>
         </div>
+
+        <div class="mt-4">
+          <button
+            id="connect"
+            class="button bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg focus:outline-none"
+          >
+            Connect Base Wallet
+          </button>
+        </div>
+        
       </div>
       <div class="grid-container">
         <div class="sidebar">
@@ -293,6 +303,12 @@
     </div>
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-    <script src="/javascripts/script.js"></script>
+    <!-- Load Viem for blockchain communication -->
+<script src="https://cdn.jsdelivr.net/npm/viem@latest/dist/viem.umd.min.js"></script>
+
+<!-- Load the contract ABI from your own JS file -->
+
+
+<script type="module" src="/javascripts/script.js"></script>
   </body>
 </html>
