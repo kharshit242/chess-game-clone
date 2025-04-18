@@ -1,5 +1,6 @@
-import { abi as contractABI } from '/javascripts/contracts/ChessGameABI.js'; window.contractABI = contractABI;
-window.contractABI = abi;
+import { abi as contractABI } from './contracts/ChessGameABI.js';
+window.contractABI = contractABI;
+
 
 
 const socket = io();
@@ -192,7 +193,7 @@ recordMoveOnMonad(gameId, moveNotation);
   renderBoard();
 });
 
-import { abi } from './contracts/ChessGameABI.js'
+import { abi } from './src/contracts/ChessGameABI.js'
 
 async function recordMoveOnMonad(gameId, moveNotation) {
   const CONTRACT_ADDRESS = '0xYOUR_CONTRACT_ADDRESS' // 🧠 Paste your deployed contract address here
@@ -284,16 +285,5 @@ const showPossibleMoves = (row, col) => {
 
 renderBoard();
 
-document.getElementById("connect").addEventListener("click", async () => {
-  if (window.ethereum) {
-    try {
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      console.log("👜 Base Wallet connected!");
-    } catch (err) {
-      console.error("❌ Wallet connection failed:", err);
-    }
-  } else {
-    alert("Please install Base Wallet or MetaMask to connect.");
-  }
-});
+document.getElementById("connect").addEventListener("click", async () => { if (window.ethereum) { const accounts = await window.ethereum.request({ method: "eth_accounts" }); if (accounts.length > 0) { console.log("👜 Base Wallet already connected!"); return; } try { await window.ethereum.request({ method: "eth_requestAccounts" }); console.log("👜 Base Wallet connected!"); } catch (err) { console.error("❌ Wallet connection failed:", err); } } else { alert("Please install Base Wallet or MetaMask to connect."); } });
 
