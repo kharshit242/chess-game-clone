@@ -226,6 +226,7 @@ async function recordMoveOnMonad(gameId, moveNotation) {
       abi: contractABI,
       functionName: 'recordMove',
       args: [gameId, moveNotation],
+      account: 0x1cD68141f724AB03513Ee8C6B8C411c2Daa35570,
     });
     console.log('✅ Move recorded on Monad! TxHash:', txHash);
   } catch (err) {
