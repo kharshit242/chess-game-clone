@@ -2,6 +2,32 @@ import { abi as contractABI } from './contracts/ChessGameABI.js';
 import { io } from "socket.io-client";
 import { Chess } from 'chess.js';
 import { createWalletClient, custom } from 'viem';
+import { ethers } from "ethers";
+
+let gameId = null;
+let contract = null;
+const CONTRACT_ADDRESS = '0x7402240A741bbF3b0fD8740965ba35Dd49b81610';
+
+async function createGame(player1, player2) {
+  try {
+    const provider = new window.ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    contract = new window.ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
+
+    const tx = await contract.createGame(player1, player2, {
+      gasLimit: 80000,
+      maxFeePerGas: window.ethers.utils.parseUnits("80.000000001", "gwei"),
+      maxPriorityFeePerGas: window.ethers.utils.parseUnits("0.000000001", "gwei")
+    });
+
+    const receipt = await tx.wait();
+    gameId = receipt.events[0].args.gameId.toString();
+    console.log("✅ Game created! Game ID:", gameId);
+  } catch (err) {
+    console.error("❌ Failed to create game:", err);
+  }
+}
 
 
 window.contractABI = contractABI;
@@ -176,6 +202,19 @@ const renderBoard = () => {
   }
 };
 
+document.getElementById("createGameBtn").addEventListener("click", async () => {
+  if (!window.ethereum) {
+    alert("Please connect your wallet first!");
+    return;
+  }
+
+  const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+  const player1 = accounts[0];
+  const player2 = accounts[0]; // Use same for now, or customize later
+
+  await createGame(player1, player2);
+});
+
 socket.on("PlayerRole", (role) => {
   playerRole = role;
   renderBoard();
@@ -195,7 +234,7 @@ socket.on("move", (move) => {
   chess.move(move);
   const moveNotation = `${move.from} to ${move.to}`;
 const gameId = 0; // Use real game ID if available
-recordMoveOnMonad(gameId, moveNotation);
+recordMoveOnMonad(moveNotation);
 
   renderBoard();
 });
@@ -203,12 +242,13 @@ recordMoveOnMonad(gameId, moveNotation);
 
 
 async function recordMoveOnMonad(gameId, moveNotation) {
-  const CONTRACT_ADDRESS = '0x7402240A741bbF3b0fD8740965ba35Dd49b81610';
- // 🧠 Replace this
+ 
+
+  const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
 
   const client = createWalletClient({
     chain: {
-      id: 9090,
+      id: 10143,
       name: 'Monad Testnet',
       nativeCurrency: { name: 'Monad', symbol: 'MON', decimals: 18 },
       rpcUrls: {
@@ -219,20 +259,25 @@ async function recordMoveOnMonad(gameId, moveNotation) {
     },
     transport: custom(window.ethereum),
   });
+  
 
   try {
     const txHash = await client.writeContract({
       address: CONTRACT_ADDRESS,
       abi: contractABI,
       functionName: 'recordMove',
+      gas: BigInt(80_000),
       args: [gameId, moveNotation],
-      account: 0x1cD68141f724AB03513Ee8C6B8C411c2Daa35570,
+      account,
+      maxFeePerGas: BigInt(80_000000001), // 50.000000001 Gwei
+  maxPriorityFeePerGas: BigInt(1),
     });
     console.log('✅ Move recorded on Monad! TxHash:', txHash);
   } catch (err) {
     console.error('❌ Failed to record move:', err);
   }
 }
+
 
 
 

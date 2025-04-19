@@ -9,6 +9,8 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
       rel="stylesheet"
     />
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <style>
       body {
         font-family: "Roboto", sans-serif;
@@ -231,6 +233,7 @@
         background-color: #6eb5ff;
       }
     </style>
+    
   </head>
   <body>
     <div class="container mx-auto">
@@ -272,6 +275,16 @@
             Connect Base Wallet
           </button>
         </div>
+
+        <div class="mt-4">
+          <button
+            id="createGameBtn"
+            class="button bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg focus:outline-none"
+          >
+            Create Blockchain Game
+          </button>
+        </div>
+        
         
       </div>
       <div class="grid-container">
